@@ -1,34 +1,15 @@
 export default class Tile{
-    value = 2;
-    x = 0;
-    y = 0;
-
+    value = 2
+    x = 1
+    y = 1
     constructor(value, x, y){
-        this.value = value;
-        this.x = 0;
-        this.y = 0;
-        this.merged = false;
+        this.value = value
+        this.x = x
+        this.y = y
     }
 
     sumValues(tile){
-        if(!this.canMergeWith(tile)) return null;
-        return new Tile(this.value + tile.value, this.x, this.y)
-        this.merged = true;
-        tile.merged = true;
+        return new Tile(this.value + tile.value)
     }
 
-    canMergeWith(tile){
-        return(
-            tile && this.value === this.value && !this.merged && !tile.merged
-        )
-    }
-
-    setPosition(x, y){
-        this.x = x;
-        this.y = y;
-    }
-
-    resetMerged(){
-        this.merged = false;
-    }
 }
