@@ -37,6 +37,8 @@ body{
   align-items: flex-start;
   padding-top: 40px;
   color: #776e65;
+  overflow: hidden; /* запрещает прокрутку страницы */
+  height: 100%;
 }
 
 .game{

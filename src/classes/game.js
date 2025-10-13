@@ -29,9 +29,9 @@ export default class Game {
     }
     newGame(){
         this.score = 0;
-        this.tiles = []
-        this.spawnTile()
-        this.spawnTile()
+        this.tiles = [];
+        this.spawnTile();
+        this.spawnTile();
     }
 
     findEmptyCoords(){
@@ -42,10 +42,13 @@ export default class Game {
             }
 
         }
-        emptyCoords.filter((item) => !this.tiles.find((tile) => item === `${tile.x}-${tile.y}`))
 
+        return emptyCoords.filter((item) => 
+            !this.tiles.find((tile) => 
+                item == `${tile.x}-${tile.y}`
+            )
+        )
 
-        return emptyCoords
         // let c = []
         // for (let item of emptyCoords){
         //     let find = false
@@ -65,19 +68,21 @@ export default class Game {
     
     spawnTile(){
         const emptyCoords = this.findEmptyCoords()
+        if(emptyCoords.length === 0) return;
 
         let randomCoords = emptyCoords[Math.floor(Math.random() * emptyCoords.length)]
-
-        let [x, y] = randomCoords.split("-")
-
-        this.tiles.push(new Tile(2, x, y))
-
+        let [x, y] = randomCoords.split("-");
+        this.tiles.push(new Tile(2, x, y));
+        console.log("spawned");
+        
 
     }
 
     moveDown(){}
     moveUp(){}
-    moveRigth(){}
-    moveLeft(){}
+    moveRight(){}
+    moveLeft(){
+        
+    }
 
 }
