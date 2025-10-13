@@ -80,9 +80,13 @@ export default class Game {
 
     moveDown(){}
     moveUp(){}
-    moveRight(){}
-    moveLeft(){
+    moveRight(){
+        this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x +1 == 5 ? 4 : +tile.x + 1}))
+        console.log(this.tiles);
         
+    }
+    moveLeft(){
+        this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x -1 == 0 ? 1 : +tile.x - 1}))
     }
 
 }

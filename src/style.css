@@ -39,6 +39,7 @@ body{
   color: #776e65;
   overflow: hidden; /* запрещает прокрутку страницы */
   height: 100%;
+  background: grey;
 }
 
 .game{
