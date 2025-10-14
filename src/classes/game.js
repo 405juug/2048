@@ -3,10 +3,10 @@ import Tile from "./tile.js"
 export default class Game {
     static generateStyleTable(tileCount, tileSize){
         const table = {}
-        for (let y = 1; y <= tileCount; y++){
-            for (let x = 1; x <= tileCount; x++){
-                let left = `left: ${(x - 1) * tileSize + (x - 1) * 10}px;`
-                let top = `top: ${(y - 1) * tileSize + (y - 1) * 10}px;`
+        for (let y = 0; y <= tileCount; y++){
+            for (let x = 0; x <= tileCount; x++){
+                let left = `left: ${(x) * tileSize + (x) * 10}px;`
+                let top = `top: ${(y) * tileSize + (y) * 10}px;`
                 table[`${x}-${y}`] = `${left} ${top}`
             }
 
@@ -19,7 +19,12 @@ export default class Game {
         this.tileCount = 4
 
         this.score = 0
-        this.tiles = []
+        this.tiles = [
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null]
+        ]
 
         this.styleTable = Game.generateStyleTable(this.tileCount, this.tileSize)
     }
@@ -29,25 +34,25 @@ export default class Game {
     }
     newGame(){
         this.score = 0;
-        this.tiles = [];
+        this.tiles = [
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null],
+            [null, null, null, null]
+        ]
         this.spawnTile();
         this.spawnTile();
     }
 
     findEmptyCoords(){
-        const emptyCoords = []
-         for (let y = 1; y <= this.tileCount; y++){
-            for (let x = 1; x <= this.tileCount; x++){
-                emptyCoords.push(`${x}-${y}`)
+        let emptyCoords = [];
+        for(let y = 0; y < this.tiles.length; y++){
+            for(let x = 0; x < this.tiles[y].length; x++){
+                if (!this.tiles[y][x]) emptyCoords.push(`${x}-${y}`);
             }
-
         }
 
-        return emptyCoords.filter((item) => 
-            !this.tiles.find((tile) => 
-                item == `${tile.x}-${tile.y}`
-            )
-        )
+        return emptyCoords
 
         // let c = []
         // for (let item of emptyCoords){
@@ -65,28 +70,62 @@ export default class Game {
 
 
     }
+
+    isCollide(tile){
+
+    }
     
-    spawnTile(){
-        const emptyCoords = this.findEmptyCoords()
-        if(emptyCoords.length === 0) return;
+    spawnTile(x, y, v = Math.floor(Math.random() * 2 + 1) * 2){
+        if(!x || !y){
+            const emptyCoords = this.findEmptyCoords()
+            let randomCoords = emptyCoords[Math.floor(Math.random() * emptyCoords.length)]
+            const [newX, newY] = randomCoords.split("-");
+            x = newX;
+            y = newY;
+        }
 
-        let randomCoords = emptyCoords[Math.floor(Math.random() * emptyCoords.length)]
-        let [x, y] = randomCoords.split("-");
-        this.tiles.push(new Tile(2, x, y));
-        console.log("spawned");
-        
-
+        this.tiles[y][x] = new Tile(v, +x, +y)        
     }
 
     moveDown(){}
     moveUp(){}
     moveRight(){
-        this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x +1 == 5 ? 4 : +tile.x + 1}))
-        console.log(this.tiles);
-        
+        // this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x +1 == 5 ? 4 : +tile.x + 1}))
+        // console.log(this.tiles);
+            for(let y = 0; y < this.tiles.length; y++){
+                for(let x = this.tiles[y].length - 2; x >= 0; x--){
+                    if(!this.tiles[y][x]) continue
+                    for(let i = x + 1; i < this.tiles[y].length; i++){
+                    if(this.tiles[y][i]){
+                        if(i == x + 1) break
+                        this.tiles[y][i - 1] = this.tiles[y][x];
+                        this.tiles[y][x] = null;
+                    }
+                    if(!this.tiles[y][i] && i == this.tiles[y].length - 1){
+                        this.tiles[y][i] = this.tiles[y][x];
+                        this.tiles[y][x] = null;
+                    }
+                } 
+            }
+        }
     }
     moveLeft(){
-        this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x -1 == 0 ? 1 : +tile.x - 1}))
+        // this.tiles = this.tiles.map((tile) => ({...tile, x: +tile.x -1 == 0 ? 1 : +tile.x - 1}))
+        for(let y = 0; y < this.tiles.length; y++){
+            for(let x = 1; x < this.tiles[y].length; x++){
+                if(!this.tiles[y][x]) continue
+                for(let i = x - 1; i >= 0; i--){
+                    if(this.tiles[y][i]){
+                        if(i == x - 1) break
+                        this.tiles[y][i + 1] = this.tiles[y][x];
+                        this.tiles[y][x] = null;
+                    }
+                    if(!this.tiles[y][i] && i == 0){
+                        this.tiles[y][i] = this.tiles[y][x];
+                        this.tiles[y][x] = null;
+                    }
+                } 
+            }
+        }
     }
-
 }

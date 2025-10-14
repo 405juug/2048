@@ -13,6 +13,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@font-face {
+  font-family: 'helvetica';
+  src: url(/src/fonts/helvetica/Helvetica.ttf);
+}
+
+@font-face {
+  font-family: 'helvetica-bold';
+  src: url(/src/fonts/helvetica/Helvetica-Bold.ttf);
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -103,8 +113,11 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: red;
   transition: all 0.4s;
+  font-size: 50px;
+  color: white;
+  font-weight: bold;
+  font-family: 'helvetica-bold';
 }
 
 .cell{
@@ -134,17 +147,46 @@ body{
   position: absolute;
 }
 
-.tile-position-1-1 {
-  left: 0;
-  top: 0;
+.tile-2{
+  background: #eee4da;
 }
 
-.tile-position-1-2{
-  left: 0;
-  top: 110px
+.tile-4{
+  background: #ede0c8;
 }
 
-.tile-position-2-3{
-  left: 110px;
-  top: 220px;
+.tile-8{
+  background: #f2b179;
+}
+
+.tile-16{
+  background: #f59563;
+}
+
+.tile-32{
+  background: #f67c5f;
+}
+
+.tile-64{
+  background: #f65e3b;
+}
+
+.tile-128{
+  background: #edcf72;
+}
+
+.tile-256{
+  background: #edcc61;
+}
+
+.tile-512{
+  background: #edc850;
+}
+
+.tile-1024{
+  background: #edc53f;
+}
+
+.tile-2048{
+  background: #edc22e;
 }
