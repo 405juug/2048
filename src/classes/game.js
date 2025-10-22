@@ -167,40 +167,40 @@ export default class Game {
             }
         }
 
-        for(let x = 0; x < this.tileCount; x++){
-            let col = [];
-            for(let y = 0; y < this.tileCount; y++){
-                col.push(this.tiles[y][x])
-            }
+        // for(let x = 0; x < this.tileCount; x++){
+        //     let col = [];
+        //     for(let y = 0; y < this.tileCount; y++){
+        //         col.push(this.tiles[y][x])
+        //     }
 
-            let merged = this.mergeRow(col);
+        //     let merged = this.mergeRow(col);
 
-            for(let y = 0; y < this.tileCount; y++){
-                this.tiles[y][x] = merged[y]
-            }
-        }
+        //     for(let y = 0; y < this.tileCount; y++){
+        //         this.tiles[y][x] = merged[y]
+        //     }
+        // }
 
 
-        for(let x = 0; x < this.tileCount; x++){
-            for(let y = 1; y < this.tileCount; y++){
-                if(!this.tiles[y][x]) continue
+        // for(let x = 0; x < this.tileCount; x++){
+        //     for(let y = 1; y < this.tileCount; y++){
+        //         if(!this.tiles[y][x]) continue
 
-                for(let i = y - 1; i >= 0; i--){
-                    if(this.tiles[i][x]){
-                        if(i == y - 1) break;
-                        this.tiles[i + 1][x] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
+        //         for(let i = y - 1; i >= 0; i--){
+        //             if(this.tiles[i][x]){
+        //                 if(i == y - 1) break;
+        //                 this.tiles[i + 1][x] = this.tiles[y][x];
+        //                 this.tiles[y][x] = null;
+        //                 break;
+        //             }
 
-                    if(!this.tiles[i][x] && i == 0){
-                        this.tiles[i][x] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
-                }
-            }
-        }
+        //             if(!this.tiles[i][x] && i == 0){
+        //                 this.tiles[i][x] = this.tiles[y][x];
+        //                 this.tiles[y][x] = null;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
 
         this.spawnTile();
     }
@@ -210,6 +210,11 @@ export default class Game {
                     if(!this.tiles[y][x]) continue
                     for(let i = x + 1; i < this.tiles[y].length; i++){
                         if(this.tiles[y][i]){
+
+                        if(this.tiles[y][i].value == this.tiles[y][x].value){
+                            this.tiles[y][i] = new Tile(this.tiles[y][i].value * 2)
+                            this.tiles[y][x] = null
+                        }
                             if(i == x + 1) break
                             this.tiles[y][i - 1] = this.tiles[y][x];
                             this.tiles[y][x] = null;
@@ -222,28 +227,28 @@ export default class Game {
                 }
             } 
             
-            for(let y = 0; y < this.tileCount; y++){
-                let row = [...this.tiles[y]].reverse();
-                let merged = this.mergeRow(row).reverse();
-                this.tiles[y] = merged;
-            }
+            // for(let y = 0; y < this.tileCount; y++){
+            //     let row = [...this.tiles[y]].reverse();
+            //     let merged = this.mergeRow(row).reverse();
+            //     this.tiles[y] = merged;
+            // }
 
-            for(let y = 0; y < this.tiles.length; y++){
-                for(let x = this.tiles[y].length - 2; x >= 0; x--){
-                    if(!this.tiles[y][x]) continue
-                    for(let i = x + 1; i < this.tiles[y].length; i++){
-                        if(this.tiles[y][i]){
-                            if(i == x + 1) break
-                            this.tiles[y][i - 1] = this.tiles[y][x];
-                            this.tiles[y][x] = null;
-                    }
-                    if(!this.tiles[y][i] && i == this.tiles[y].length - 1){
-                        this.tiles[y][i] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                    }
-                    } 
-                }
-            } 
+            // for(let y = 0; y < this.tiles.length; y++){
+            //     for(let x = this.tiles[y].length - 2; x >= 0; x--){
+            //         if(!this.tiles[y][x]) continue
+            //         for(let i = x + 1; i < this.tiles[y].length; i++){
+            //             if(this.tiles[y][i]){
+            //                 if(i == x + 1) break
+            //                 this.tiles[y][i - 1] = this.tiles[y][x];
+            //                 this.tiles[y][x] = null;
+            //         }
+            //         if(!this.tiles[y][i] && i == this.tiles[y].length - 1){
+            //             this.tiles[y][i] = this.tiles[y][x];
+            //             this.tiles[y][x] = null;
+            //         }
+            //         } 
+            //     }
+            // } 
 
             this.spawnTile()
     }
@@ -253,9 +258,24 @@ export default class Game {
                 if(!this.tiles[y][x]) continue
                 for(let i = x - 1; i >= 0; i--){
                     if(this.tiles[y][i]){
-                        if(i == x - 1) break
+                        
+                        try{
+                            
+                            if(this.tiles[y][i].value == this.tiles[y][x].value){
+                                this.tiles[y][i] = new Tile(this.tiles[y][i].value * 2)
+                                this.tiles[y][x] = null
+                                break
+                            }
+                        }
+                        catch(e){
+                            console.log(x, y);
+                            
+                        }
+                        if (i == x - 1 ) break
+                        
                         this.tiles[y][i + 1] = this.tiles[y][x];
                         this.tiles[y][x] = null;
+                        
                     }
                     if(!this.tiles[y][i] && i == 0){
                         this.tiles[y][i] = this.tiles[y][x];
@@ -265,30 +285,30 @@ export default class Game {
             }
         }
 
-        for(let y = 0; y < this.tileCount; y++){
-            let row = this.tiles[y];
-            this.tiles[y] = this.mergeRow(row);
-        }
+        // for(let y = 0; y < this.tileCount; y++){
+        //     let row = this.tiles[y];
+        //     this.tiles[y] = this.mergeRow(row);
+        // }
 
-        for(let y = 0; y < this.tiles.length; y++){
-            for(let x = 1; x < this.tiles[y].length; x++){
-                if(!this.tiles[y][x]) continue;
+        // for(let y = 0; y < this.tiles.length; y++){
+        //     for(let x = 1; x < this.tiles[y].length; x++){
+        //         if(!this.tiles[y][x]) continue;
 
-                for(let i = x - 1; i >= 0; i--){
-                    if(this.tiles[y][i]){
-                        if(i == x - 1) break;
-                        this.tiles[y][i + 1] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
-                    if(!this.tiles[y][i] && i == 0){
-                        this.tiles[y][i] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
-                }
-            }
-        }
+        //         for(let i = x - 1; i >= 0; i--){
+        //             if(this.tiles[y][i]){
+        //                 if(i == x - 1) break;
+        //                 this.tiles[y][i + 1] = this.tiles[y][x];
+        //                 this.tiles[y][x] = null;
+        //                 break;
+        //             }
+        //             if(!this.tiles[y][i] && i == 0){
+        //                 this.tiles[y][i] = this.tiles[y][x];
+        //                 this.tiles[y][x] = null;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
 
         this.spawnTile();
     }
