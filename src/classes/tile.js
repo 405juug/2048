@@ -11,10 +11,14 @@ export default class Tile{
         this.value = value
         this.x = x
         this.y = y
+        this.isMerged = false;
     }
 
     sumValues(tile){
-        return new Tile(this.value + tile.value)
+        const newTile = new Tile(this.value + tile.value, this.x, this.y)
+        newTile.isMerged = true;
+        return newTile;
+
     }
 
 }

@@ -2,11 +2,12 @@ import Tile from "./tile.js"
 
 export default class Game {
     static generateStyleTable(tileCount, tileSize){
+        const gap = 10;
         const table = {}
         for (let y = 0; y <= tileCount; y++){
             for (let x = 0; x <= tileCount; x++){
-                let left = `left: ${(x) * tileSize + (x) * 10}px;`
-                let top = `top: ${(y) * tileSize + (y) * 10}px;`
+                let left = `left: ${x * (tileSize + gap)}px;`
+                let top = `top: ${y * (tileSize + gap)}px;`
                 table[`${x}-${y}`] = `${left} ${top}`
             }
 
@@ -87,243 +88,192 @@ export default class Game {
         this.tiles[y][x] = new Tile(v, +x, +y)        
     }
 
-    moveDown(){
-        for(let x = 0; x < this.tileCount; x++){
-            for(let y = this.tileCount - 2; y >= 0; y--){
-                if(!this.tiles[y][x]) continue
+    moveUp() {
+        let moved = false;
 
-                for(let i = y + 1; i < this.tileCount; i++){
-                    if(this.tiles[i][x]){
-                        if(i == y + 1) break;
-                        this.tiles[i - 1][x] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
+        for (let x = 0; x < this.tileCount; x++) {
+            let mergedY = -1;
 
-                    if(!this.tiles[i][x] && i == this.tileCount - 1){
-                        this.tiles[i][x] = this.tiles[y][x];
+            for (let y = 1; y < this.tileCount; y++) {
+                if (!this.tiles[y][x]) continue;
+
+                let currentTile = this.tiles[y][x];
+                let targetY = y;
+
+                while (targetY > 0 && !this.tiles[targetY - 1][x]) {
+                    targetY--;
+                }
+
+                if (
+                    targetY > 0 &&
+                    this.tiles[targetY - 1][x] &&
+                    this.tiles[targetY - 1][x].value === currentTile.value &&
+                    mergedY !== targetY - 1
+                ) {
+                    this.tiles[targetY - 1][x] = new Tile(
+                        currentTile.value * 2,
+                        x,
+                        targetY - 1
+                    );
+                    this.tiles[y][x] = null;
+                    mergedY = targetY - 1;
+                    moved = true;
+                } else {
+                    if (targetY !== y) {
+                        this.tiles[targetY][x] = currentTile;
                         this.tiles[y][x] = null;
-                        break;
+                        moved = true;
                     }
                 }
             }
         }
 
-        for(let x = 0; x < this.tileCount; x++){
-            let col = [];
-            for(let y = this.tileCount - 1; y >= 0; y--){
-                col.push(this.tiles[y][x])
-            }
+        if (moved) this.spawnTile();
+    }
 
-            let merged = this.mergeRow(col).reverse();
+    moveDown() {
+        let moved = false;
 
-            for(let y = 0; y < this.tileCount; y++){
-                this.tiles[y][x] = merged[y];
-            }
-        }
+        for (let x = 0; x < this.tileCount; x++) {
+            let mergedY = this.tileCount;
 
-        for(let x = 0; x < this.tileCount; x++){
-            for(let y = this.tileCount - 2; y >= 0; y--){
-                if(!this.tiles[y][x]) continue
+            for (let y = this.tileCount - 2; y >= 0; y--) {
+                if (!this.tiles[y][x]) continue;
 
-                for(let i = y + 1; i < this.tileCount; i++){
-                    if(this.tiles[i][x]){
-                        if(i == y + 1) break;
-                        this.tiles[i - 1][x] = this.tiles[y][x];
+                let currentTile = this.tiles[y][x];
+                let targetY = y;
+
+                while (targetY < this.tileCount - 1 && !this.tiles[targetY + 1][x]) {
+                    targetY++;
+                }
+
+                if (
+                    targetY < this.tileCount - 1 &&
+                    this.tiles[targetY + 1][x] &&
+                    this.tiles[targetY + 1][x].value === currentTile.value &&
+                    mergedY !== targetY + 1
+                ) {
+                    this.tiles[targetY + 1][x] = new Tile(
+                        currentTile.value * 2,
+                        x,
+                        targetY + 1
+                    );
+                    this.tiles[y][x] = null;
+                    mergedY = targetY + 1;
+                    moved = true;
+                } else {
+                    if (targetY !== y) {
+                        this.tiles[targetY][x] = currentTile;
                         this.tiles[y][x] = null;
-                        break;
-                    }
-
-                    if(!this.tiles[i][x] && i == this.tileCount - 1){
-                        this.tiles[i][x] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
+                        moved = true;
                     }
                 }
             }
         }
 
-        this.spawnTile()
+        if (moved) this.spawnTile();
     }
-    moveUp(){
-        for(let x = 0; x < this.tileCount; x++){
-            for(let y = 1; y < this.tileCount; y++){
-                if(!this.tiles[y][x]) continue
 
-                for(let i = y - 1; i >= 0; i--){
-                    if(this.tiles[i][x]){
-                        if(i == y - 1) break;
-                        this.tiles[i + 1][x] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                        break;
-                    }
+    moveLeft() {
+        let moved = false;
 
-                    if(!this.tiles[i][x] && i == 0){
-                        this.tiles[i][x] = this.tiles[y][x];
+        for (let y = 0; y < this.tileCount; y++) {
+            let mergedX = -1;
+
+            for (let x = 1; x < this.tileCount; x++) {
+                if (!this.tiles[y][x]) continue;
+
+                let currentTile = this.tiles[y][x];
+                let targetX = x;
+
+                while (targetX > 0 && !this.tiles[y][targetX - 1]) {
+                    targetX--;
+                }
+
+                if (
+                    targetX > 0 &&
+                    this.tiles[y][targetX - 1] &&
+                    this.tiles[y][targetX - 1].value === currentTile.value &&
+                    mergedX !== targetX - 1
+                ) {
+                    this.tiles[y][targetX - 1] = new Tile(
+                        currentTile.value * 2,
+                        targetX - 1,
+                        y
+                    );
+                    this.tiles[y][x] = null;
+                    mergedX = targetX - 1;
+                    moved = true;
+                } else {
+                    if (targetX !== x) {
+                        this.tiles[y][targetX] = currentTile;
                         this.tiles[y][x] = null;
-                        break;
+                        moved = true;
                     }
                 }
             }
         }
 
-        // for(let x = 0; x < this.tileCount; x++){
-        //     let col = [];
-        //     for(let y = 0; y < this.tileCount; y++){
-        //         col.push(this.tiles[y][x])
-        //     }
-
-        //     let merged = this.mergeRow(col);
-
-        //     for(let y = 0; y < this.tileCount; y++){
-        //         this.tiles[y][x] = merged[y]
-        //     }
-        // }
-
-
-        // for(let x = 0; x < this.tileCount; x++){
-        //     for(let y = 1; y < this.tileCount; y++){
-        //         if(!this.tiles[y][x]) continue
-
-        //         for(let i = y - 1; i >= 0; i--){
-        //             if(this.tiles[i][x]){
-        //                 if(i == y - 1) break;
-        //                 this.tiles[i + 1][x] = this.tiles[y][x];
-        //                 this.tiles[y][x] = null;
-        //                 break;
-        //             }
-
-        //             if(!this.tiles[i][x] && i == 0){
-        //                 this.tiles[i][x] = this.tiles[y][x];
-        //                 this.tiles[y][x] = null;
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
-
-        this.spawnTile();
+        if (moved) this.spawnTile();
     }
-    moveRight(){
-            for(let y = 0; y < this.tiles.length; y++){
-                for(let x = this.tiles[y].length - 2; x >= 0; x--){
-                    if(!this.tiles[y][x]) continue
-                    for(let i = x + 1; i < this.tiles[y].length; i++){
-                        if(this.tiles[y][i]){
 
-                        if(this.tiles[y][i].value == this.tiles[y][x].value){
-                            this.tiles[y][i] = new Tile(this.tiles[y][i].value * 2)
-                            this.tiles[y][x] = null
-                        }
-                            if(i == x + 1) break
-                            this.tiles[y][i - 1] = this.tiles[y][x];
-                            this.tiles[y][x] = null;
-                    }
-                    if(!this.tiles[y][i] && i == this.tiles[y].length - 1){
-                        this.tiles[y][i] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                    }
-                    } 
+    moveRight() {
+        let moved = false;
+
+        for (let y = 0; y < this.tileCount; y++) {
+            let mergedX = this.tileCount;
+
+            for (let x = this.tileCount - 2; x >= 0; x--) {
+                if (!this.tiles[y][x]) continue;
+
+                let currentTile = this.tiles[y][x];
+                let targetX = x;
+
+                while (targetX < this.tileCount - 1 && !this.tiles[y][targetX + 1]) {
+                    targetX++;
                 }
-            } 
-            
-            // for(let y = 0; y < this.tileCount; y++){
-            //     let row = [...this.tiles[y]].reverse();
-            //     let merged = this.mergeRow(row).reverse();
-            //     this.tiles[y] = merged;
-            // }
 
-            // for(let y = 0; y < this.tiles.length; y++){
-            //     for(let x = this.tiles[y].length - 2; x >= 0; x--){
-            //         if(!this.tiles[y][x]) continue
-            //         for(let i = x + 1; i < this.tiles[y].length; i++){
-            //             if(this.tiles[y][i]){
-            //                 if(i == x + 1) break
-            //                 this.tiles[y][i - 1] = this.tiles[y][x];
-            //                 this.tiles[y][x] = null;
-            //         }
-            //         if(!this.tiles[y][i] && i == this.tiles[y].length - 1){
-            //             this.tiles[y][i] = this.tiles[y][x];
-            //             this.tiles[y][x] = null;
-            //         }
-            //         } 
-            //     }
-            // } 
-
-            this.spawnTile()
-    }
-    moveLeft(){
-        for(let y = 0; y < this.tiles.length; y++){
-            for(let x = 1; x < this.tiles[y].length; x++){
-                if(!this.tiles[y][x]) continue
-                for(let i = x - 1; i >= 0; i--){
-                    if(this.tiles[y][i]){
-                        
-                        try{
-                            
-                            if(this.tiles[y][i].value == this.tiles[y][x].value){
-                                this.tiles[y][i] = new Tile(this.tiles[y][i].value * 2)
-                                this.tiles[y][x] = null
-                                break
-                            }
-                        }
-                        catch(e){
-                            console.log(x, y);
-                            
-                        }
-                        if (i == x - 1 ) break
-                        
-                        this.tiles[y][i + 1] = this.tiles[y][x];
+                if (
+                    targetX < this.tileCount - 1 &&
+                    this.tiles[y][targetX + 1] &&
+                    this.tiles[y][targetX + 1].value === currentTile.value &&
+                    mergedX !== targetX + 1
+                ) {
+                    this.tiles[y][targetX + 1] = new Tile(
+                        currentTile.value * 2,
+                        targetX + 1,
+                        y
+                    );
+                    this.tiles[y][x] = null;
+                    mergedX = targetX + 1;
+                    moved = true;
+                } else {
+                    if (targetX !== x) {
+                        this.tiles[y][targetX] = currentTile;
                         this.tiles[y][x] = null;
-                        
+                        moved = true;
                     }
-                    if(!this.tiles[y][i] && i == 0){
-                        this.tiles[y][i] = this.tiles[y][x];
-                        this.tiles[y][x] = null;
-                    }
-                } 
+                }
             }
         }
 
-        // for(let y = 0; y < this.tileCount; y++){
-        //     let row = this.tiles[y];
-        //     this.tiles[y] = this.mergeRow(row);
-        // }
-
-        // for(let y = 0; y < this.tiles.length; y++){
-        //     for(let x = 1; x < this.tiles[y].length; x++){
-        //         if(!this.tiles[y][x]) continue;
-
-        //         for(let i = x - 1; i >= 0; i--){
-        //             if(this.tiles[y][i]){
-        //                 if(i == x - 1) break;
-        //                 this.tiles[y][i + 1] = this.tiles[y][x];
-        //                 this.tiles[y][x] = null;
-        //                 break;
-        //             }
-        //             if(!this.tiles[y][i] && i == 0){
-        //                 this.tiles[y][i] = this.tiles[y][x];
-        //                 this.tiles[y][x] = null;
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
-
-        this.spawnTile();
+        if (moved) this.spawnTile();
     }
+
 
     mergeRow(row){
         let filtered = row.filter(v => v !== null);
-
         let merged = [];
+
         for (let i = 0; i < filtered.length; i++){
             if(filtered[i + 1] && filtered[i].value === filtered[i + 1].value){
-                let newTile = new Tile(filtered[i].value * 2);
+                let newTile = filtered[i].sumValues(filtered[i + 1]);
+                newTile.merged = true;
                 merged.push(newTile);
-                this.score += newTile.value;
+                filtered[i] = null;
+                filtered[i + 1] = null;
                 i++;
-            } else {
+            } else if(filtered[i]){
                 merged.push(filtered[i]);
             }
         }
