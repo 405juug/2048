@@ -1,4 +1,5 @@
 import Tile from "./tile.js"
+import { render } from "../gameLogic.js";
 
 export default class Game {
     static generateStyleTable(tileCount, tileSize){
@@ -129,6 +130,10 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+
+        if (this.isGameOver()) {
+            this.showOverlay("lose");
+        }
     }
 
     moveDown() {
@@ -172,6 +177,10 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+
+        if (this.isGameOver()) {
+            this.showOverlay("lose");
+        }
     }
 
     moveLeft() {
@@ -215,6 +224,10 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+        
+        if (this.isGameOver()) {
+            this.showOverlay("lose");
+        }
     }
 
     moveRight() {
@@ -258,6 +271,10 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+
+        if (this.isGameOver()) {
+            this.showOverlay("lose");
+        }
     }
 
 
@@ -284,4 +301,43 @@ export default class Game {
 
         return merged;
     }
+
+    showOverlay(type) {
+        const overlay = document.querySelector(".gameOverlay");
+        const img = document.getElementById("overlayImage");
+        const newGameBtn = document.getElementById("newGameBtnOverlay");
+
+        gameOverlay.style.display = "flex";
+
+        if (type === "win") {
+            img.src = "";
+        } else if (type === "lose") {
+            img.src = "";
+        }
+
+        newGameBtn.onclick = () => {
+            overlay.style.display = "none";
+            game.newGame();
+            render(game.tiles, game.styleTable); 
+        };
+    }
+
+    isGameOver() {
+        for (let y = 0; y < this.tileCount; y++) {
+            for (let x = 0; x < this.tileCount; x++) {
+            const tile = this.tiles[y][x];
+            if (!tile) return false;
+
+            if (
+                (x < this.tileCount - 1 && this.tiles[y][x + 1]?.value === tile.value) ||
+                (y < this.tileCount - 1 && this.tiles[y + 1][x]?.value === tile.value)
+            ) {
+                return false;
+            }
+            }
+        }
+        return true;
+    }
 }
+
+const game = new Game()

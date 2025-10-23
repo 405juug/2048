@@ -118,3 +118,5 @@
         game.newGame();
         render(game.tiles, game.styleTable);
 } 
+
+export {render}
