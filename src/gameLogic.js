@@ -8,6 +8,9 @@
     function render(list, styleList){
     const gameTiles = document.querySelector(".gameTiles")
 
+        document.querySelector("#currentScoreValue").textContent = game.score;
+        document.querySelector("#maxScoreValue").textContent = game.bestScore;
+
         if(tileList.length == 0) gameTiles.innerHTML = ""
 
         for(let y = 0; y < list.length; y++){
@@ -75,6 +78,10 @@
         list.flat().forEach(tile => {
             if(tile) tile.merged = false
         })
+
+    
+
+
     }
 
 
@@ -91,6 +98,8 @@
             game.newGame();
             tileList = [];
             render(game.tiles, game.styleTable)
+            document.querySelector("#currentScoreValue").textContent = game.score;
+            document.querySelector("#maxScoreValue").textContent = game.bestScore;
         })
 
         document.addEventListener("keydown", (e) => {

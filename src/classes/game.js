@@ -28,7 +28,8 @@ export default class Game {
             [null, null, null, null]
         ]
 
-        this.styleTable = Game.generateStyleTable(this.tileCount, this.tileSize)
+        this.styleTable = Game.generateStyleTable(this.tileCount, this.tileSize);
+        this.bestScore = parseInt(localStorage.getItem("bestScore")) || 0;
     }
 
     getTiles(){
@@ -79,14 +80,14 @@ export default class Game {
     
     spawnTile(x, y, v = Math.floor(Math.random() * 2 + 1) * 2){
         if(!x || !y){
-            const emptyCoords = this.findEmptyCoords()
+            const emptyCoords = this.findEmptyCoords();
             let randomCoords = emptyCoords[Math.floor(Math.random() * emptyCoords.length)]
             const [newX, newY] = randomCoords.split("-");
             x = newX;
             y = newY;
         }
 
-        this.tiles[y][x] = new Tile(v, +x, +y)        
+        this.tiles[y][x] = new Tile(v, +x, +y)
     }
 
     moveUp() {
@@ -116,6 +117,7 @@ export default class Game {
                         x,
                         targetY - 1
                     );
+                    this.score += currentTile.value * 2;
                     this.tiles[y][x] = null;
                     mergedY = targetY - 1;
                     moved = true;
@@ -127,6 +129,11 @@ export default class Game {
                     }
                 }
             }
+        }
+
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem("bestScore", this.bestScore);
         }
 
         if (moved) this.spawnTile();
@@ -163,6 +170,7 @@ export default class Game {
                         x,
                         targetY + 1
                     );
+                    this.score += currentTile.value * 2;
                     this.tiles[y][x] = null;
                     mergedY = targetY + 1;
                     moved = true;
@@ -174,6 +182,11 @@ export default class Game {
                     }
                 }
             }
+        }
+
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem("bestScore", this.bestScore);
         }
 
         if (moved) this.spawnTile();
@@ -210,6 +223,7 @@ export default class Game {
                         targetX - 1,
                         y
                     );
+                    this.score += currentTile.value * 2;
                     this.tiles[y][x] = null;
                     mergedX = targetX - 1;
                     moved = true;
@@ -224,6 +238,12 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem("bestScore", this.bestScore);
+        }
+
         
         if (this.isGameOver()) {
             this.showOverlay("lose");
@@ -257,6 +277,7 @@ export default class Game {
                         targetX + 1,
                         y
                     );
+                    this.score += currentTile.value * 2;
                     this.tiles[y][x] = null;
                     mergedX = targetX + 1;
                     moved = true;
@@ -271,6 +292,11 @@ export default class Game {
         }
 
         if (moved) this.spawnTile();
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem("bestScore", this.bestScore);
+        }
+
 
         if (this.isGameOver()) {
             this.showOverlay("lose");
@@ -317,8 +343,8 @@ export default class Game {
 
         newGameBtn.onclick = () => {
             overlay.style.display = "none";
-            game.newGame();
-            render(game.tiles, game.styleTable); 
+            this.newGame();
+            render(this.tiles, this.styleTable); 
         };
     }
 
@@ -338,6 +364,8 @@ export default class Game {
         }
         return true;
     }
+
+    
 }
 
 const game = new Game()

@@ -84,11 +84,24 @@ body{
 .currentScore,
 .maxScore{
   background: #bbada0;
-  color: #fff;
+  color: #776e65;
   padding: 8px 16px;
   border-radius: 8px;
   min-width: 100px;
   text-align: center;
+  font-family: 'helvetica-bold';
+}
+
+.label__currentScore {
+  font-size: 14px;
+  color: #f9f6f2;
+}
+
+.value__currentScore,
+.value__maxScore {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
 }
 
 .gameBack{
